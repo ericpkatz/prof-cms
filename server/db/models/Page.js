@@ -18,26 +18,33 @@ const Page = db.define('page', {
   content: {
     type: TEXT
   }
+}, {
+  hooks: {
+    beforeDestroy: async function(page){
+      if(page.isHomePage){
+        const error = Error('can not destroy home page');
+        throw error;
+      }
+      const children = await Page.count({
+        where: {
+          parentId: page.id
+        }
+      });
+      if(children){
+        const error = Error('can not destroy pages with children');
+        throw error;
+      }
+    }
+  }
 })
 
 Page.getHomePage = function(){
-  const include = [
-    {
-      model: Page,
-      as: 'children'
-    },
-    {
-      model: Page,
-      as: 'parent'
-    }
-  ];
-  return this.findOne({ include, where: {isHomePage: true} })
-    .then( async (page) => {
+  return this.findOne({ where: {isHomePage: true} })
+    .then( (page) => {
       if(page){
         return page;
       }
-      page = await Page.create({ title: 'Home', isHomePage: true, content: 'The Home Page' })
-      return page.findByPk(page.id, { include });
+      return Page.create({ title: 'Home', isHomePage: true, content: 'The Home Page' })
     })
 };
 
