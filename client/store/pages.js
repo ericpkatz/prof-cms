@@ -1,4 +1,6 @@
 import axios from 'axios'
+//TODO - when creating make sure parent is aware
+//when deleting make sure parents are aware
 
 /**
  * ACTION TYPES
@@ -48,13 +50,25 @@ export const destroyPage = ({ page, history }) => dispatch => {
  * REDUCER
  */
 export default function(state = {}, action) {
+  let parentPage;
   switch (action.type) {
     case SET_PAGE:
-      return {...state, [action.page.id]: action.page } 
+      state =  {...state, [action.page.id]: action.page } 
+      parentPage = state[action.page.parentId];
+      if(parentPage && !parentPage.children.find(child => child.id === action.page.id)){
+        parentPage = {...parentPage, children: [ ...parentPage.children, { id: action.page.id, title: action.page.title }] };
+        state = {...state, [parentPage.id]: parentPage };
+      }
+      return state;
     case REMOVE_PAGE:
-      const copy = {...state };
-      //get rid of the page if it can be found as a child of any pages
+      let copy = {...state };
       delete copy[action.page.id];
+      //remove the child from parent if loaded
+      parentPage = copy[action.page.parentId];
+      if(parentPage){
+        parentPage = { ...parentPage, children: parentPage.children.filter( child => child.id !== action.page.id )};
+        copy = {...copy, [parentPage.id]: parentPage };
+      }
       return copy;
     default:
       return state

@@ -46,7 +46,7 @@ class Page extends Component {
     }
   }
   render(){
-    const { page } = this.props;
+    const { page, pagesLoaded } = this.props;
     const { title, content } = this.state;
     const { onChange, create, destroy } = this;
     if(!page){
@@ -54,15 +54,28 @@ class Page extends Component {
     }
     return (
       <div>
-        <Link to='/'>Site</Link>
-        {
-          page.parent && <Link to={`/${page.parent.isHomePage ? '' : page.parent.id}`}>{
-            page.parent.title
-          }</Link>
-        }
+        <h1><Link to='/'>Profs CMS</Link></h1>
+        <ul className='nav nav-tabs'>
+          {
+            page.parent && <li className='nav-item'><Link className='nav-link' to={`/${page.parent.isHomePage ? '' : page.parent.id}`}>&lt; &lt; {
+              page.parent.title
+            }</Link></li>
+          }
+          <li className='nav-item'>
+            <Link to={`/${page.isHomePage ? '' : page.id}`} className='nav-link active'>
+              { page.title }
+            </Link>
+          </li>
+        </ul>
+        <div>
+          <label className='badge badge-secondary'>{ pagesLoaded } Pages Loaded</label> 
+        </div>
         <h1>
-          { page.title }
         </h1>
+          {
+            !page.children.length && !page.isHomePage &&  
+            <button onClick={ destroy } className='btn btn-danger btn-sm'>Destroy Page</button>
+          }
         <div>
           { page.content }
         </div>
@@ -77,12 +90,11 @@ class Page extends Component {
             })
           }
         </ul>
-        <button onClick={ destroy }>X</button>
-        <form onSubmit={ create }>
-          <h2>Add A Child</h2>
-          <input name='title' value={ title } onChange={ onChange } />
-          <input name='content' value={ content } onChange={ onChange } />
-          <button>Save</button>
+        <form onSubmit={ create } className='card'>
+          <h3>Add A Child</h3>
+          <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
+          <input name='content' value={ content } onChange={ onChange } placeholder='...content'/>
+          <button className='btn btn-primary'>Create Page</button>
         </form>
       </div>
     );
@@ -92,7 +104,8 @@ class Page extends Component {
 const mapStateToProps = ({ pages }, { match })=> {
   return {
     page: match.params.id ? pages[match.params.id] : Object.values(pages).find( page => page.isHomePage),
-    id: match.params.id
+    id: match.params.id,
+    pagesLoaded: Object.entries(pages).length
   };
 };
 

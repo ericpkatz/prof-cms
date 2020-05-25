@@ -9,7 +9,11 @@ const Page = db.define('page', {
     defaultValue: UUIDV4
   },
   title: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   },
   isHomePage: {
     type: BOOLEAN, 

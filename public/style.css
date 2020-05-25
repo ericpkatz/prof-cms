@@ -10,6 +10,9 @@ label {
   display: block;
 }
 
+.nav {
+  margin-bottom: 1rem;
+}
 nav a {
   display: inline-block;
   margin: 1em;
