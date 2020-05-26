@@ -31,3 +31,18 @@ form {
 form > * {
   margin: 1rem;
 }
+
+main {
+  display: flex;
+}
+
+main #left {
+  flex: 3;
+}
+
+main #right {
+  border-left: solid 1px dodgerBlue;
+  flex: 2;
+  margin-left: 1rem;
+  padding-left: 1rem;
+}

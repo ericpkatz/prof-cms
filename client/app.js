@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route } from 'react-router-dom';
 
-import { Page } from './components'
+import Page from './components/Page'
 
 const App = () => {
   return (
