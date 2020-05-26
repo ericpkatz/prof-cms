@@ -5,7 +5,6 @@ import { fetchPage, createPage, destroyPage } from '../store';
 
 const Hier = ({ hier, pages })=> {
   const children = Object.values(pages).filter( p => p.parentId === hier.id ); 
-  console.log(children);
   return (
     <ul>
       <li>
@@ -86,38 +85,47 @@ class Page extends Component {
                 </Link>
               </li>
             </ul>
-            <h1>
-            </h1>
-              {
-                !page.children.length && !page.isHomePage &&  
-                <button onClick={ destroy } className='btn btn-danger btn-sm'>Destroy Page</button>
-              }
-            <div>
-              { page.content }
+            <div className='btn-group'>
+              <Link to={`/edit/${page.id}`} className='btn btn-primary'>
+                Edit
+              </Link>
+                {
+                  !page.children.length && !page.isHomePage &&  
+                  <button onClick={ destroy } className='btn btn-danger'>Destroy</button>
+                }
             </div>
-            <ul>
+            <ul className='nav'>
               {
                 page.children.map( child => {
                   return (
-                    <li key={ child.id }>
-                      <Link to={`/${child.id}`}>{ child.title }</Link>
+                    <li key={ child.id } className='nav-item'>
+                      <Link className='nav-link' to={`/${child.id}`}>{ child.title }</Link>
                     </li>
                   );
                 })
               }
             </ul>
+            <div className='card'>
+              <div className='card-body'>
+                { page.content }
+              </div>
+            </div>
             <form onSubmit={ create } className='card'>
-              <h3>Add A Child</h3>
+              <h3>Add A Child to { page.title }</h3>
               <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
               <input name='content' value={ content } onChange={ onChange } placeholder='...content'/>
-              <button className='btn btn-primary'>Create Page</button>
+              <button className='btn btn-primary'>Create</button>
             </form>
           </section>
           <section id='right'>
             <div>
               <label className='badge badge-secondary'>{ pagesLoaded } Pages Loaded</label> 
             </div>
-            <Hier hier={ this.props.hier } pages={ this.props.pages }/>
+            {
+              this.props.hier.map( (hier, idx) => {
+                return <Hier key={ idx } hier={ hier } pages={ this.props.pages }/>
+              })
+            }
           </section>
        </main>
       </div>
@@ -128,12 +136,16 @@ class Page extends Component {
 const mapStateToProps = ({ pages }, { match })=> {
   const _pages = Object.values(pages);
   const topPage = _pages.find( p => !pages[p.parentId]); 
+  const homePage = _pages.find( p => p.isHomePage);
   //TODO - home page might also have loaded
   //see if topPage and homePage are loaded
   //if topPage is not the home page and topPage can not be found from home page hier, then show 2 Hier
-  let hier = {};
+  let hier = [];
   if(topPage){
-    hier = topPage; 
+    hier = [topPage]; 
+    if(homePage && topPage.id !== homePage.id){
+      hier.push(homePage);
+    }
   }
   return {
     pages,

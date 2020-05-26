@@ -33,7 +33,15 @@ export const createPage = ({ page, history }) => dispatch => {
   return axios.post('/api/pages', page)
     .then( async(response) => {
       await dispatch(setPage(response.data))
-      history.push(`${response.data.id}`);
+      history.push(`/${response.data.id}`);
+    })
+}
+
+export const updatePage = ({ page, history }) => dispatch => {
+  return axios.put(`/api/pages/${page.id}`, page)
+    .then( async(response) => {
+      await dispatch(setPage(response.data))
+      history.push(`/${response.data.id}`);
     })
 }
 
@@ -55,10 +63,23 @@ export default function(state = {}, action) {
     case SET_PAGE:
       state =  {...state, [action.page.id]: action.page } 
       parentPage = state[action.page.parentId];
+      //created
       if(parentPage && !parentPage.children.find(child => child.id === action.page.id)){
         parentPage = {...parentPage, children: [ ...parentPage.children, { id: action.page.id, title: action.page.title }] };
         state = {...state, [parentPage.id]: parentPage };
       }
+      //update
+      if(parentPage && parentPage.children.find(child => child.id === action.page.id)){
+        parentPage = {...parentPage, children: [ ...parentPage.children.filter(child => child.id !== action.page.id), { id: action.page.id, title: action.page.title }] };
+        state = {...state, [parentPage.id]: parentPage };
+      }
+      const childPages = Object.values(state).filter( page => page.parentId === action.page.id)
+        .map( child => {
+          return {...child, parent : { id: action.page.id, title: action.page.title }};
+        });
+      childPages.forEach( child => {
+        state = {...state, [child.id] : child };
+      });
       return state;
     case REMOVE_PAGE:
       let copy = {...state };
