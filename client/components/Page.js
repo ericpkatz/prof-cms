@@ -70,7 +70,7 @@ class Page extends Component {
     }
     return (
       <div>
-        <h1><Link to='/'>Profs CMS</Link></h1>
+        <h1><Link to='/'>{ SITE_TITLE }</Link></h1>
         <main>
           <section id='left'>
             <ul className='nav nav-tabs'>

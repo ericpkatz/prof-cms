@@ -5,11 +5,14 @@
     <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css' />
     <meta name='viewport' content='width=device-width initial-scale=1.0'>
     <title>Profs CMS</title>
-    <link rel="stylesheet" href="/style.css" />
-    <script defer src="/bundle.js"></script>
+    <link rel="stylesheet" href="/public/style.css" />
+    <script defer src="/public/bundle.js"></script>
   </head>
   <body>
     <div id="app" class='container'></div>
+  <script>
+    var SITE_TITLE = `<%= SITE_TITLE %>`.replace('&#39;', '\'');
+  </script>
   </body>
 </html>
 

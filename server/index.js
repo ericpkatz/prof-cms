@@ -5,6 +5,7 @@ const compression = require('compression')
 const db = require('./db')
 const PORT = process.env.PORT || 8080
 const app = express()
+const ejs = require('ejs');
 module.exports = app
 
 
@@ -19,11 +20,19 @@ const createApp = () => {
   // compression middleware
   app.use(compression())
 
+  app.engine('html', ejs.renderFile);
+
 
   app.use('/api', require('./api'))
 
   // static file-serving middleware
-  app.use(express.static(path.join(__dirname, '..', 'public')))
+  app.use('/public', express.static(path.join(__dirname, '..', 'public')))
+
+  app.get('/', (req, res) => {
+    res.render(path.join(__dirname, '..', 'public/index.html'), {
+      SITE_TITLE: process.env.SITE_TITLE || `PROF's CMS`
+    })
+  })
 
   // any remaining requests with an extension (.js, .css, etc.) send 404
   app.use((req, res, next) => {
@@ -37,9 +46,6 @@ const createApp = () => {
   })
 
   // sends index.html
-  app.use('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public/index.html'))
-  })
 
   // error handling endware
   app.use((err, req, res, next) => {
