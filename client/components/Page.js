@@ -62,7 +62,7 @@ class Page extends Component {
     }
   }
   render(){
-    const { page, pagesLoaded } = this.props;
+    const { page, pagesLoaded, auth } = this.props;
     const { title, content } = this.state;
     const { onChange, create, destroy } = this;
     if(!page){
@@ -85,15 +85,20 @@ class Page extends Component {
                 </Link>
               </li>
             </ul>
-            <div className='btn-group'>
-              <Link to={`/edit/${page.id}`} className='btn btn-primary'>
-                Edit
-              </Link>
-                {
-                  !page.children.length && !page.isHomePage &&  
-                  <button onClick={ destroy } className='btn btn-danger'>Destroy</button>
-                }
-            </div>
+            {
+              auth.id && (
+                <div className='btn-group'>
+                  <Link to={`/edit/${page.id}`} className='btn btn-primary'>
+                    Edit
+                  </Link>
+                    {
+                      !page.children.length && !page.isHomePage &&  
+                      <button onClick={ destroy } className='btn btn-danger'>Destroy</button>
+                    }
+                </div>
+
+              )
+            }
             <ul className='nav'>
               {
                 page.children.map( child => {
@@ -110,12 +115,16 @@ class Page extends Component {
                 { page.content }
               </div>
             </div>
-            <form onSubmit={ create } className='card'>
-              <h3>Add A Child to { page.title }</h3>
-              <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
-              <input name='content' value={ content } onChange={ onChange } placeholder='...content'/>
-              <button className='btn btn-primary'>Create</button>
-            </form>
+            {
+              auth.id && (
+                <form onSubmit={ create } className='card'>
+                  <h3>Add A Child to { page.title }</h3>
+                  <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
+                  <textarea name='content' value={ content } onChange={ onChange } placeholder='...content'/>
+                  <button className='btn btn-primary'>Create</button>
+                </form>
+              )
+            }
           </section>
           <section id='right'>
             <div>
@@ -133,7 +142,7 @@ class Page extends Component {
   }
 }
 
-const mapStateToProps = ({ pages }, { match })=> {
+const mapStateToProps = ({ pages, auth }, { match })=> {
   const _pages = Object.values(pages);
   const topPage = _pages.find( p => !pages[p.parentId]); 
   const homePage = _pages.find( p => p.isHomePage);
@@ -148,6 +157,7 @@ const mapStateToProps = ({ pages }, { match })=> {
     }
   }
   return {
+    auth,
     pages,
     hier,
     page: match.params.id ? pages[match.params.id] : Object.values(pages).find( page => page.isHomePage),

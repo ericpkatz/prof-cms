@@ -53,7 +53,7 @@ class Form extends Component {
             <form onSubmit={ update } className='card'>
               <h3>Update Page</h3>
               <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
-              <input name='content' value={ content } onChange={ onChange } placeholder='...content'/>
+              <textarea name='content' value={ content } onChange={ onChange } placeholder='...content'/>
               <button className='btn btn-primary'>Update Page</button>
               <Link to={`/${ page.isHomePage ? '' : page.id }`}>Cancel</Link>
             </form>
