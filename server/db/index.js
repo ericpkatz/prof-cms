@@ -16,6 +16,7 @@ const syncAndSeed = async()=> {
       password: 'LUCY'
     })
   ]);
+
   return users.reduce((acc, user)=> {
     acc[user.email] = user;
     return acc;
