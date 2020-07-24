@@ -3,6 +3,10 @@ const db = require('./db')
 // register models
 const models = require('./models')
 
+const { User, Page, Image } = models;
+
+Image.belongsTo(Page);
+
 const syncAndSeed = async()=> {
   await db.sync({ force: true });
   const User = models.User;

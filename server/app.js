@@ -68,8 +68,10 @@ app.use((req, res, next) => {
 
 // error handling endware
 app.use((err, req, res, next) => {
-  console.error(err)
-  console.error(err.stack)
+  if(err.status !== 401){
+    console.error(err)
+    console.error(err.stack)
+  }
   res.status(err.status || 500).send(err.message || 'Internal server error.')
 })
 

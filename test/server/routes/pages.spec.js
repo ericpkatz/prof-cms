@@ -3,7 +3,7 @@ const app = require('supertest')(require('../../../server/app'));
 const jwt = require('jwt-simple');
 
 const db = require('../../../server/db');
-const { Page } = db.models;
+const { Page, Image } = db.models;
 
 describe('Routes: pages', ()=> {
   let users;
@@ -14,7 +14,6 @@ describe('Routes: pages', ()=> {
       expect(response.status).to.equal(200);
     });
     it('creates a page if one does not exist', async()=> {
-      await Page.destroy({ truncate: true });
       const response = await app.get('/api/pages');
       expect(response.status).to.equal(200);
       expect(response.body.title).to.equal('Home');

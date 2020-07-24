@@ -52,6 +52,15 @@ class Page extends Component {
 
   }
   componentDidMount(){
+    const fileReader = new FileReader();
+    fileReader.addEventListener('load', ()=> {
+      console.log(fileReader.result);
+    });
+    if(this.el){
+      this.el.addEventListener('change', ()=> {
+        fileReader.readAsDataURL(this.el.files[0]);
+      });
+    }
     if(!this.props.page){
       this.props.fetchPage(this.props.id);
     }
@@ -119,6 +128,7 @@ class Page extends Component {
               auth.id && (
                 <form onSubmit={ create } className='card'>
                   <h3>Add A Child to { page.title }</h3>
+                  <input ref={ el => this.el = el } type='file' />
                   <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
                   <textarea name='content' value={ content } onChange={ onChange } placeholder='...content'/>
                   <button className='btn btn-primary'>Create</button>

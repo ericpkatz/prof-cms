@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const { STRING, BOOLEAN, UUID, UUIDV4, TEXT } = Sequelize;
+const { VIRTUAL, STRING, BOOLEAN, UUID, UUIDV4, TEXT } = Sequelize;
 const db = require('../db')
 
 const Page = db.define('page', {
@@ -19,11 +19,19 @@ const Page = db.define('page', {
     type: BOOLEAN, 
     defaultValue: false
   },
+  imageData: {
+    type: VIRTUAL
+  },
   content: {
     type: TEXT
   }
 }, {
   hooks: {
+    beforeSave: async function(page){
+      if(page.imageData){
+        await db.models.image.upload(page.imageData, process.env.BUCKET);
+      }
+    },
     beforeDestroy: async function(page){
       if(page.isHomePage){
         const error = Error('can not destroy home page');
