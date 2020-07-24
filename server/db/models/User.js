@@ -2,6 +2,7 @@ const crypto = require('crypto')
 const Sequelize = require('sequelize')
 const { UUID, UUIDV4 } = Sequelize;
 const db = require('../db')
+const jwt = require('jwt-simple');
 
 const User = db.define('user', {
   id : {
@@ -42,6 +43,10 @@ module.exports = User
  */
 User.prototype.correctPassword = function(candidatePwd) {
   return User.encryptPassword(candidatePwd, this.salt()) === this.password()
+}
+
+User.prototype.generateToken = function(){
+  return jwt.encode({ id: this.id }, process.env.JWT_SECRET);
 }
 
 /**

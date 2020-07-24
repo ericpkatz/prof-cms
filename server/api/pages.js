@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const {Page } = require('../db/models')
+const { isLoggedIn } = require('./middleware');
 module.exports = router
 
 const include = [
@@ -19,7 +20,7 @@ const include = [
   }
 ];
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', isLoggedIn, (req, res, next) => {
   Page.findByPk(req.params.id)
     .then( page => page.destroy())
     .then(()=> res.sendStatus(204))
@@ -42,7 +43,7 @@ router.get('/:id?', (req, res, next) => {
   }
 });
 
-router.post('/', (req, res, next)=> {
+router.post('/', isLoggedIn, (req, res, next)=> {
   Page.create(req.body)
     .then(page => {
       return Page.findByPk(page.id, { include });
@@ -51,7 +52,7 @@ router.post('/', (req, res, next)=> {
     .catch(next)
 });
 
-router.put('/:id', (req, res, next)=> {
+router.put('/:id', isLoggedIn, (req, res, next)=> {
   Page.findByPk(req.params.id)
     .then( page => {
       return page.update(req.body);

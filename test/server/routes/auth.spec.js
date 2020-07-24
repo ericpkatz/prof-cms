@@ -25,6 +25,7 @@ describe('Routes: auth', ()=> {
       });
     });
   });
+
   describe('GET /api/auth', ()=> {
     describe('With a valid token', ()=> {
       it('returns user', async()=> {
