@@ -4,7 +4,8 @@ import {  exchangeTokenForAuth, logout } from './store';
 import { connect } from 'react-redux';
 
 import Page from './components/Page'
-import Form from './components/Form'
+import FormUpdate from './components/FormUpdate'
+import FormCreate from './components/FormCreate'
 import Login from './components/Login'
 
 const App = ({ exchangeTokenForAuth, auth, logout}) => {
@@ -14,7 +15,8 @@ const App = ({ exchangeTokenForAuth, auth, logout}) => {
   return (
     <div>
       <Switch>
-        <Route path='/edit/:id?' component={ Form } />
+        <Route path='/add/:id?' component={ FormCreate } />
+        <Route path='/edit/:id?' component={ FormUpdate } />
         <Route path='/login' component={ Login } />
         <Route path='/:id?' component={ Page } />
       </Switch>

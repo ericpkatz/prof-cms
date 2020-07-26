@@ -5,7 +5,8 @@ const models = require('./models')
 
 const { User, Page, Image } = models;
 
-Image.belongsTo(Page);
+Page.belongsTo(Image);
+Image.hasMany(Page);
 
 const syncAndSeed = async()=> {
   await db.sync({ force: true });

@@ -14,7 +14,7 @@ module.exports = app
 app.use(morgan('dev'))
 
 // body parsing middleware
-app.use(express.json())
+app.use(express.json({ limit: '50mb'}));
 
 // compression middleware
 app.use(compression())

@@ -22,6 +22,9 @@ const Page = db.define('page', {
   imageData: {
     type: VIRTUAL
   },
+  removeImage: {
+    type: VIRTUAL
+  },
   content: {
     type: TEXT
   }
@@ -29,7 +32,10 @@ const Page = db.define('page', {
   hooks: {
     beforeSave: async function(page){
       if(page.imageData){
-        await db.models.image.upload(page.imageData, process.env.BUCKET);
+        page.imageId = (await db.models.image.upload(page.imageData, process.env.bucket)).id;
+      }
+      if(page.removeImage){
+        page.imageId = null;
       }
     },
     beforeDestroy: async function(page){

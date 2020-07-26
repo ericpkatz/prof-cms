@@ -1,9 +1,12 @@
 const router = require('express').Router()
-const {Page } = require('../db/models')
+const { Image, Page } = require('../db/models')
 const { isLoggedIn } = require('./middleware');
 module.exports = router
 
 const include = [
+  {
+    model: Image
+  },
   {
     model: Page,
     as: 'children',

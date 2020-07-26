@@ -29,8 +29,16 @@ export const fetchPage = (id, history) => async dispatch => {
     })
 }
 
+const headers = ()=> {
+  return {
+    headers: {
+      authorization: localStorage.getItem('token')
+    }
+  };
+};
+
 export const createPage = ({ page, history }) => dispatch => {
-  return axios.post('/api/pages', page)
+  return axios.post('/api/pages', page, headers())
     .then( async(response) => {
       await dispatch(setPage(response.data))
       history.push(`/${response.data.id}`);
@@ -38,7 +46,7 @@ export const createPage = ({ page, history }) => dispatch => {
 }
 
 export const updatePage = ({ page, history }) => dispatch => {
-  return axios.put(`/api/pages/${page.id}`, page)
+  return axios.put(`/api/pages/${page.id}`, page, headers())
     .then( async(response) => {
       await dispatch(setPage(response.data))
       history.push(`/${response.data.id}`);
@@ -46,7 +54,7 @@ export const updatePage = ({ page, history }) => dispatch => {
 }
 
 export const destroyPage = ({ page, history }) => dispatch => {
-  return axios.delete(`/api/pages/${page.id}`)
+  return axios.delete(`/api/pages/${page.id}`, headers())
     .then( async(response) => {
       await dispatch(removePage(page))
       history.push(`/${page.parent.isHomePage ? '' : page.parentId}`);

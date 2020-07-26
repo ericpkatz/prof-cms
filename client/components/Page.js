@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchPage, createPage, destroyPage } from '../store';
+import { fetchPage, destroyPage } from '../store';
 
 const Hier = ({ hier, pages })=> {
   const children = Object.values(pages).filter( p => p.parentId === hier.id ); 
@@ -22,45 +22,12 @@ const Hier = ({ hier, pages })=> {
 class Page extends Component {
   constructor(){
     super();
-    this.state = {
-      title: '',
-      content: ''
-    };
-    this.onChange = this.onChange.bind(this);
-    this.create = this.create.bind(this);
     this.destroy = this.destroy.bind(this);
   }
   destroy(){
     this.props.destroy(this.props.page);
   }
-  create(ev){
-    ev.preventDefault();
-    const { title, content } = this.state;
-
-    this.props.createPage({
-      title, content, parentId: this.props.page.id
-    })
-    .then(()=> {
-      this.setState({
-        title: '',
-        content: ''
-      });
-    })
-  }
-  onChange(ev){
-    this.setState({ [ev.target.name ]: ev.target.value });
-
-  }
   componentDidMount(){
-    const fileReader = new FileReader();
-    fileReader.addEventListener('load', ()=> {
-      console.log(fileReader.result);
-    });
-    if(this.el){
-      this.el.addEventListener('change', ()=> {
-        fileReader.readAsDataURL(this.el.files[0]);
-      });
-    }
     if(!this.props.page){
       this.props.fetchPage(this.props.id);
     }
@@ -72,8 +39,7 @@ class Page extends Component {
   }
   render(){
     const { page, pagesLoaded, auth } = this.props;
-    const { title, content } = this.state;
-    const { onChange, create, destroy } = this;
+    const { destroy } = this;
     if(!page){
       return '...loading';
     }
@@ -100,6 +66,9 @@ class Page extends Component {
                   <Link to={`/edit/${page.id}`} className='btn btn-primary'>
                     Edit
                   </Link>
+                  <Link to={`/add/${page.id}`} className='btn btn-primary'>
+                    Add
+                  </Link>
                     {
                       !page.children.length && !page.isHomePage &&  
                       <button onClick={ destroy } className='btn btn-danger'>Destroy</button>
@@ -122,19 +91,11 @@ class Page extends Component {
             <div className='card'>
               <div className='card-body'>
                 { page.content }
+                {
+                  page.image && <img src={ page.image.url } />
+                }
               </div>
             </div>
-            {
-              auth.id && (
-                <form onSubmit={ create } className='card'>
-                  <h3>Add A Child to { page.title }</h3>
-                  <input ref={ el => this.el = el } type='file' />
-                  <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
-                  <textarea name='content' value={ content } onChange={ onChange } placeholder='...content'/>
-                  <button className='btn btn-primary'>Create</button>
-                </form>
-              )
-            }
           </section>
           <section id='right'>
             <div>
