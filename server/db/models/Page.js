@@ -56,6 +56,7 @@ const Page = db.define('page', {
   }
 })
 
+
 Page.getHomePage = function(){
   return this.findOne({ where: {isHomePage: true} })
     .then( (page) => {

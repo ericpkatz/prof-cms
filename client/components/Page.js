@@ -1,23 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchPage, destroyPage } from '../store';
+import { destroyPage } from '../store';
 
-const Hier = ({ hier, pages })=> {
-  const children = Object.values(pages).filter( p => p.parentId === hier.id ); 
-  return (
-    <ul>
-      <li>
-        { hier.title }
-        {
-          children.map( child => {
-            return <Hier key={ child.id } hier={ child } pages={ pages } />
-          })
-        }
-      </li> 
-    </ul>
-  );
-};
 
 class Page extends Component {
   constructor(){
@@ -26,16 +11,6 @@ class Page extends Component {
   }
   destroy(){
     this.props.destroy(this.props.page);
-  }
-  componentDidMount(){
-    if(!this.props.page){
-      this.props.fetchPage(this.props.id);
-    }
-  }
-  componentDidUpdate(prevProps){
-    if(!this.props.page && this.props.id !== prevProps.id){
-      this.props.fetchPage(this.props.id);
-    }
   }
   render(){
     const { page, pagesLoaded, auth } = this.props;
@@ -64,10 +39,10 @@ class Page extends Component {
               auth.id && (
                 <div className='btn-group'>
                   <Link to={`/edit/${page.id}`} className='btn btn-primary'>
-                    Edit
+                    Update
                   </Link>
-                  <Link to={`/add/${page.id}`} className='btn btn-primary'>
-                    Add
+                  <Link to={`/add/${page.id}`} className='btn btn-secondary'>
+                    Create
                   </Link>
                     {
                       !page.children.length && !page.isHomePage &&  
@@ -97,16 +72,6 @@ class Page extends Component {
               </div>
             </div>
           </section>
-          <section id='right'>
-            <div>
-              <label className='badge badge-secondary'>{ pagesLoaded } Pages Loaded</label> 
-            </div>
-            {
-              this.props.hier.map( (hier, idx) => {
-                return <Hier key={ idx } hier={ hier } pages={ this.props.pages }/>
-              })
-            }
-          </section>
        </main>
       </div>
     );
@@ -115,23 +80,16 @@ class Page extends Component {
 
 const mapStateToProps = ({ pages, auth }, { match })=> {
   const _pages = Object.values(pages);
-  const topPage = _pages.find( p => !pages[p.parentId]); 
-  const homePage = _pages.find( p => p.isHomePage);
-  //TODO - home page might also have loaded
-  //see if topPage and homePage are loaded
-  //if topPage is not the home page and topPage can not be found from home page hier, then show 2 Hier
-  let hier = [];
-  if(topPage){
-    hier = [topPage]; 
-    if(homePage && topPage.id !== homePage.id){
-      hier.push(homePage);
-    }
+  let page = match.params.id ? pages[match.params.id] : _pages.find( page => page.isHomePage);
+  if(page){
+    page = {...page };
+    page.children = _pages.filter( p => p.parentId === page.id );
+    page.parent = _pages.find( p => p.id === page.parentId );
   }
   return {
     auth,
     pages,
-    hier,
-    page: match.params.id ? pages[match.params.id] : Object.values(pages).find( page => page.isHomePage),
+    page,
     id: match.params.id,
     pagesLoaded: Object.entries(pages).length
   };
@@ -139,11 +97,7 @@ const mapStateToProps = ({ pages, auth }, { match })=> {
 
 const mapDispatchToProps = (dispatch, { history })=> {
   return {
-    destroy: (page)=> dispatch(destroyPage({ page, history })),
-    fetchPage: (id)=> dispatch(fetchPage(id, history)),
-    createPage: (page)=> {
-      return dispatch(createPage({page, history}))
-    }
+    destroy: (page)=> dispatch(destroyPage({ page, history }))
   };
 };
 

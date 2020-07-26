@@ -5,27 +5,24 @@ import axios from 'axios'
 /**
  * ACTION TYPES
  */
-const SET_PAGE = 'SET_PAGE'
-const REMOVE_PAGE = 'REMOVE_PAGE'
+const UPDATE_PAGE = 'UPDATE_PAGE'
+const SET_PAGES = 'SET_PAGES'
+const DESTROY_PAGE = 'DESTROY_PAGE'
+const CREATE_PAGE = 'CREATE_PAGE'
 
 /**
  * ACTION CREATORS
  */
-const setPage = page => ({type: SET_PAGE, page})
-const removePage = page => ({type: REMOVE_PAGE, page})
+const _createPage = page => ({type: CREATE_PAGE, page})
+const _updatePage = page => ({type: UPDATE_PAGE, page})
+const _setPages= pages => ({type: SET_PAGES, pages})
+const _destroyPage = page => ({type: DESTROY_PAGE, page})
 
-/**
- * THUNK CREATORS
- */
-export const fetchPage = (id, history) => async dispatch => {
-  return axios.get(`/api/pages/${id || ''}`)
+
+export const fetchPages = () => async dispatch => {
+  return axios.get('/api/pages/all')
     .then( response => {
-      if(response.data){
-        dispatch(setPage(response.data))
-      }
-      else {
-        history.push('/');
-      }
+      dispatch(_setPages(response.data))
     })
 }
 
@@ -40,7 +37,7 @@ const headers = ()=> {
 export const createPage = ({ page, history }) => dispatch => {
   return axios.post('/api/pages', page, headers())
     .then( async(response) => {
-      await dispatch(setPage(response.data))
+      await dispatch(_createPage(response.data))
       history.push(`/${response.data.id}`);
     })
 }
@@ -48,7 +45,7 @@ export const createPage = ({ page, history }) => dispatch => {
 export const updatePage = ({ page, history }) => dispatch => {
   return axios.put(`/api/pages/${page.id}`, page, headers())
     .then( async(response) => {
-      await dispatch(setPage(response.data))
+      await dispatch(_updatePage(response.data))
       history.push(`/${response.data.id}`);
     })
 }
@@ -56,7 +53,7 @@ export const updatePage = ({ page, history }) => dispatch => {
 export const destroyPage = ({ page, history }) => dispatch => {
   return axios.delete(`/api/pages/${page.id}`, headers())
     .then( async(response) => {
-      await dispatch(removePage(page))
+      await dispatch(_destroyPage(page))
       history.push(`/${page.parent.isHomePage ? '' : page.parentId}`);
     })
 }
@@ -66,40 +63,26 @@ export const destroyPage = ({ page, history }) => dispatch => {
  * REDUCER
  */
 export default function(state = {}, action) {
-  let parentPage;
   switch (action.type) {
-    case SET_PAGE:
+    case SET_PAGES: {
+      state = action.pages.reduce((acc, page) => {
+        acc[page.id] = page;
+        return acc;
+      }, {});
+      break;
+    }
+    case UPDATE_PAGE:
+      state = {...state };
+      state[action.page.id] = action.page;
+    case CREATE_PAGE:
       state =  {...state, [action.page.id]: action.page } 
-      parentPage = state[action.page.parentId];
-      //created
-      if(parentPage && !parentPage.children.find(child => child.id === action.page.id)){
-        parentPage = {...parentPage, children: [ ...parentPage.children, { id: action.page.id, title: action.page.title }] };
-        state = {...state, [parentPage.id]: parentPage };
-      }
-      //update
-      if(parentPage && parentPage.children.find(child => child.id === action.page.id)){
-        parentPage = {...parentPage, children: [ ...parentPage.children.filter(child => child.id !== action.page.id), { id: action.page.id, title: action.page.title }] };
-        state = {...state, [parentPage.id]: parentPage };
-      }
-      const childPages = Object.values(state).filter( page => page.parentId === action.page.id)
-        .map( child => {
-          return {...child, parent : { id: action.page.id, title: action.page.title }};
-        });
-      childPages.forEach( child => {
-        state = {...state, [child.id] : child };
-      });
-      return state;
-    case REMOVE_PAGE:
-      let copy = {...state };
-      delete copy[action.page.id];
-      //remove the child from parent if loaded
-      parentPage = copy[action.page.parentId];
-      if(parentPage){
-        parentPage = { ...parentPage, children: parentPage.children.filter( child => child.id !== action.page.id )};
-        copy = {...copy, [parentPage.id]: parentPage };
-      }
-      return copy;
+      break;
+    case DESTROY_PAGE:
+      state = {...state };
+      delete state[action.page.id];
+      break;
     default:
       return state
   }
+  return state;
 }

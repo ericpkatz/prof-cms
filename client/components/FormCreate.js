@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchPage, createPage, destroyPage } from '../store';
+import { createPage } from '../store';
 
 
 class Form extends Component {
@@ -39,16 +39,10 @@ class Form extends Component {
     }
   }
   componentDidMount(){
-    if(!this.props.parentPage){
-      this.props.fetchPage(this.props.id);
-    }
     this.loadFileReader();
   }
   componentDidUpdate(prevProps){
     this.loadFileReader();
-    if(!this.props.parentPage && this.props.id !== prevProps.id){
-      this.props.fetchPage(this.props.id);
-    }
   }
   render(){
     const { parentPage, pagesLoaded } = this.props;

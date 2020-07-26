@@ -6,20 +6,6 @@ module.exports = router
 const include = [
   {
     model: Image
-  },
-  {
-    model: Page,
-    as: 'children',
-    attributes: [
-      'title', 'id'
-    ]
-  },
-  {
-    model: Page,
-    as: 'parent',
-    attributes: [
-      'title', 'id', 'isHomePage'
-    ]
   }
 ];
 
@@ -28,6 +14,21 @@ router.delete('/:id', isLoggedIn, (req, res, next) => {
     .then( page => page.destroy())
     .then(()=> res.sendStatus(204))
     .catch(next);
+});
+
+router.get('/all', async(req, res, next) => {
+  try {
+    const pages = await Page.findAll({ include });
+    if(!pages.length){
+      res.send([ Page.getHomePage()]);
+    }
+    else {
+      res.send(pages);
+    }
+  }
+  catch(ex){
+    next(ex);
+  }
 });
 
 router.get('/:id?', (req, res, next) => {

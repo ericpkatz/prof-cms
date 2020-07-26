@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchPage, updatePage, destroyPage } from '../store';
+import { updatePage, destroyPage } from '../store';
 
 
 class Form extends Component {
@@ -10,6 +10,7 @@ class Form extends Component {
     this.state = {
       title: page ? page.title : '',
       content: page ? page.content : '',
+      parentId: page && page.parentId ? page.parentId: '',
       imageData: '',
       removeImage: false
     };
@@ -30,41 +31,35 @@ class Form extends Component {
   }
   update(ev){
     ev.preventDefault();
-    const { title, content, imageData, removeImage } = this.state;
+    const { title, content, imageData, removeImage, parentId } = this.state;
 
     this.props.updatePage({
-      title, content, imageData, removeImage
+      title, content, imageData, removeImage, parentId
     });
   }
   onChange(ev){
     this.setState({ [ev.target.name ]: ev.target.type === 'checkbox' ? ev.target.checked : ev.target.value });
   }
   componentDidMount(){
-    if(!this.props.page){
-      this.props.fetchPage(this.props.id);
-    }
     this.loadFileReader();
   }
   componentDidUpdate(prevProps){
     this.loadFileReader();
-    if(!this.props.page && this.props.id !== prevProps.id){
-      this.props.fetchPage(this.props.id);
-    }
     if(!prevProps.page && this.props.page){
       this.setState({
         title: this.props.page.title,
-        content: this.props.page.content
+        content: this.props.page.content,
+        parentId: this.props.page.parentId || '',
       });
     }
   }
   render(){
     const { page, pagesLoaded } = this.props;
-    const { title, content, imageData, removeImage } = this.state;
+    const { title, content, imageData, removeImage, parentId } = this.state;
     const { onChange, update } = this;
     if(!page){
       return '...loading';
     }
-    console.log(removeImage);
     return (
       <div>
             <form onSubmit={ update } className='card'>
@@ -79,6 +74,21 @@ class Form extends Component {
                   <input name='removeImage' type='checkbox' onChange={onChange}/>
                   </label>
               }
+              {
+                !page.isHomePage && 
+                <select name='parentId' value={ parentId } onChange={ onChange }>
+                  <option value=''>-- set the parent page --</option>
+                  {
+                    this.props.pages.map( page => {
+                      return (
+                        <option key={ page.id } value={ page.id }>
+                          { page.title }
+                        </option>
+                      );
+                    })
+                  }
+                </select>
+              }
               <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
               <textarea name='content' value={ content } onChange={ onChange } placeholder='...content'/>
               <button className='btn btn-primary'>Update Page</button>
@@ -90,15 +100,16 @@ class Form extends Component {
 }
 
 const mapStateToProps = ({ pages }, { location, match })=> {
+  const _pages = Object.values(pages);
   return {
-    page: match.params.id ? pages[match.params.id] : Object.values(pages).find( page => page.isHomePage),
+    pages: _pages.filter(p => p.id !== match.params.id),
+    page: match.params.id ? pages[match.params.id] : _pages.find( page => page.isHomePage),
     id: match.params.id
   };
 };
 
 const mapDispatchToProps = (dispatch, { history, match })=> {
   return {
-    fetchPage: (id)=> dispatch(fetchPage(id, history)),
     updatePage: (page)=> {
       return dispatch(updatePage({page : {...page, id: match.params.id}, history}))
     }

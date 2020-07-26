@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from 'react'
 import { Route, Switch, Link } from 'react-router-dom';
-import {  exchangeTokenForAuth, logout } from './store';
+import {  fetchPages, exchangeTokenForAuth, logout } from './store';
 import { connect } from 'react-redux';
 
 import Page from './components/Page'
@@ -8,9 +8,10 @@ import FormUpdate from './components/FormUpdate'
 import FormCreate from './components/FormCreate'
 import Login from './components/Login'
 
-const App = ({ exchangeTokenForAuth, auth, logout}) => {
+const App = ({ exchangeTokenForAuth, fetchPages, auth, logout}) => {
   useEffect(()=> {
     exchangeTokenForAuth();
+    fetchPages();
   }, []);
   return (
     <div>
@@ -33,7 +34,8 @@ const App = ({ exchangeTokenForAuth, auth, logout}) => {
 const mapDispatchToProps = (dispatch, { history })=> {
   return {
     exchangeTokenForAuth: ()=> dispatch(exchangeTokenForAuth(history)),
-    logout: ()=> dispatch(logout())
+    logout: ()=> dispatch(logout()),
+    fetchPages: ()=> dispatch(fetchPages())
   };
 };
 
