@@ -34,6 +34,9 @@ const Page = db.define('page', {
       if(page.imageData){
         page.imageId = (await db.models.image.upload(page.imageData, process.env.bucket)).id;
       }
+      if(page.parentId === ''){
+        page.parentId = null;
+      }
       if(page.removeImage){
         page.imageId = null;
       }

@@ -15,7 +15,7 @@ const Login = ({ login })=> {
     <form onSubmit={ onSubmit }>
       <input placeholder='email' name='email' onChange={ ev=> setEmail(ev.target.value)}/>
       <input placeholder='password' name='password' onChange={ ev => setPassword(ev.target.value)}/>
-      <button>Button</button>
+      <button>Login</button>
     </form>
   );
 };

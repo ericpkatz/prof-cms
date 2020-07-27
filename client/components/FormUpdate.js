@@ -12,7 +12,8 @@ class Form extends Component {
       content: page ? page.content : '',
       parentId: page && page.parentId ? page.parentId: '',
       imageData: '',
-      removeImage: false
+      removeImage: false,
+      error: ''
     };
     this.onChange = this.onChange.bind(this);
     this.update = this.update.bind(this);
@@ -35,6 +36,11 @@ class Form extends Component {
 
     this.props.updatePage({
       title, content, imageData, removeImage, parentId
+    })
+    .catch(ex => {
+      const error = typeof ex.response.data === 'string' ? ex.response.data : JSON.stringify(ex.response.data);//??
+      this.setState({ error });
+
     });
   }
   onChange(ev){
@@ -55,7 +61,7 @@ class Form extends Component {
   }
   render(){
     const { page, pagesLoaded } = this.props;
-    const { title, content, imageData, removeImage, parentId } = this.state;
+    const { title, content, imageData, removeImage, parentId, error } = this.state;
     const { onChange, update } = this;
     if(!page){
       return '...loading';
@@ -64,6 +70,9 @@ class Form extends Component {
       <div>
             <form onSubmit={ update } className='card'>
               <h3>Update Page</h3>
+              {
+                !!error && <div className='alert alert-danger'>{ error }</div>
+              }
               <input ref={ el => this.el = el } type='file' />
               {
                 page.image && <img src={ page.image.url } />

@@ -19,12 +19,14 @@ export const exchangeTokenForAuth = (history)=> {
     .then( auth => {
       dispatch(setAuth(auth))
       if(history){
-        history.push('/');
+        //history.push('/');
       }
     }) 
     .catch( ex => {
-      console.log(ex.message);
-      //window.localStorage.removeItem('token')
+      if(ex.response.status === 401){
+        window.localStorage.removeItem('token')
+        //history.push('/');
+      }
     })
   }
 }

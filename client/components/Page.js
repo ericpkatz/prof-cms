@@ -9,6 +9,11 @@ class Page extends Component {
     super();
     this.destroy = this.destroy.bind(this);
   }
+  componentDidMount(){
+    if(this.props.location.pathname === '/login'){
+      return this.props.history.push('/');
+    }
+  }
   destroy(){
     this.props.destroy(this.props.page);
   }
@@ -16,11 +21,10 @@ class Page extends Component {
     const { page, pagesLoaded, auth } = this.props;
     const { destroy } = this;
     if(!page){
-      return '...loading';
+      return '...loading App';
     }
     return (
       <div>
-        <h1><Link to='/'>{ SITE_TITLE }</Link></h1>
         <main>
           <section id='left'>
             <ul className='nav nav-tabs'>
@@ -67,7 +71,7 @@ class Page extends Component {
               <div className='card-body'>
                 { page.content }
                 {
-                  page.image && <img src={ page.image.url } />
+                  page.image && <img src={ page.image.url } style={{ width: '100%'}}/>
                 }
               </div>
             </div>
@@ -78,15 +82,20 @@ class Page extends Component {
   }
 }
 
-const mapStateToProps = ({ pages, auth }, { match })=> {
+const mapStateToProps = ({ pages, auth }, { location, match, history })=> {
   const _pages = Object.values(pages);
   let page = match.params.id ? pages[match.params.id] : _pages.find( page => page.isHomePage);
+  if(_pages.length && !page){
+    //return history.push('/');
+  }
   if(page){
     page = {...page };
     page.children = _pages.filter( p => p.parentId === page.id );
     page.parent = _pages.find( p => p.id === page.parentId );
   }
   return {
+    history,
+    location,
     auth,
     pages,
     page,

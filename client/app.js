@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from 'react'
-import { Route, Switch, Link } from 'react-router-dom';
+import { Route, Switch, Link, Redirect } from 'react-router-dom';
 import {  fetchPages, exchangeTokenForAuth, logout } from './store';
 import { connect } from 'react-redux';
 
@@ -15,10 +15,13 @@ const App = ({ exchangeTokenForAuth, fetchPages, auth, logout}) => {
   }, []);
   return (
     <div>
+      <h1><Link to='/'>{ SITE_TITLE }</Link></h1>
       <Switch>
         <Route path='/add/:id?' component={ FormCreate } />
         <Route path='/edit/:id?' component={ FormUpdate } />
-        <Route path='/login' component={ Login } />
+        {
+          !auth.id && <Route path='/login' component={ Login } />
+        }
         <Route path='/:id?' component={ Page } />
       </Switch>
       {
