@@ -1,4 +1,2 @@
-- simplify loading
-- simplify redux store
-- ability to change the parent page?
-- ability to set type of page? 
+- image resizing
+- ability to set type of page - show under parent? 

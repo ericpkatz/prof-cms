@@ -23,6 +23,7 @@ class Page extends Component {
     if(!page){
       return '...loading App';
     }
+    document.querySelector('title').innerText = `${SITE_TITLE} - ${ page.title }`;
     return (
       <div>
         <main>
@@ -39,9 +40,20 @@ class Page extends Component {
                 </Link>
               </li>
             </ul>
+            <ul className='nav'>
+              {
+                page.children.map( child => {
+                  return (
+                    <li key={ child.id } className='nav-item'>
+                      <Link className='nav-link' to={`/${child.id}`}>{ child.title }</Link>
+                    </li>
+                  );
+                })
+              }
+            </ul>
             {
               auth.id && (
-                <div className='btn-group'>
+                <div className='btn-group' style={{ marginBottom: '1rem'}}>
                   <Link to={`/edit/${page.id}`} className='btn btn-primary'>
                     Update
                   </Link>
@@ -56,17 +68,6 @@ class Page extends Component {
 
               )
             }
-            <ul className='nav'>
-              {
-                page.children.map( child => {
-                  return (
-                    <li key={ child.id } className='nav-item'>
-                      <Link className='nav-link' to={`/${child.id}`}>{ child.title }</Link>
-                    </li>
-                  );
-                })
-              }
-            </ul>
             <div className='card'>
               <div className='card-body'>
                 { page.content }

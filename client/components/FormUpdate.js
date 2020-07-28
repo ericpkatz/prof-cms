@@ -75,10 +75,10 @@ class Form extends Component {
               }
               <input ref={ el => this.el = el } type='file' />
               {
-                page.image && <img src={ page.image.url } />
+                page.image && <img style={{ width: '50px'}} src={ page.image.thumbnailURL } />
               }
               {
-                page.image && <label>
+                page.image && <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#EFEFEF', padding: '1rem'}}>
                   Remove Image
                   <input name='removeImage' type='checkbox' onChange={onChange}/>
                   </label>

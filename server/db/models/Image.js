@@ -1,5 +1,5 @@
 const S3 = require('../../S3');
-const gm = require('gm').subClass({imageMagick: true});
+const gm = require('gm');
 
 const db = require('../db')
 
@@ -10,6 +10,9 @@ const Image = db.define('image', {
     primaryKey: true
   },
   url: {
+    type: db.Sequelize.STRING
+  },
+  thumbnailURL: {
     type: db.Sequelize.STRING
   },
 });
@@ -23,11 +26,11 @@ Image.parse = function(data){
     buffer, extension
   };
 }
-Image.resize = function(bufferIn, extension){
-  return Promise.resolve(bufferIn);
+
+Image.resize = function(bufferIn, extension, size = 800){
   return new Promise((resolve, reject)=> {
     gm(bufferIn)
-      .resize(null, 50)
+      .resize(null, size)
       .toBuffer(extension, (err, bufferOut)=> {
         if(err){
           return reject(err);
@@ -50,29 +53,19 @@ Image.toAWS = function(buffer, extension, key, bucketName){
       })
 }
 
-Image.upload = function(data, bucketName){
-  return new Promise((resolve, reject)=> {
-    let buffer, extension;
-    try{
-      const result = this.parse(data);
-      buffer = result.buffer;
-      extension = result.extension;
-    }
-    catch(ex){
-      return reject(new Error('BASE64 ERROR'));
-    }
+Image.upload = async function(data, bucketName){
+    const result = this.parse(data);
+    buffer = result.buffer;
+    extension = result.extension;
     const image = this.build();
     const Key = `${image.id.toString()}.${extension}`;
-    this.resize(buffer, extension)
-    .then( buffer => {
-      return this.toAWS(buffer, extension, Key, bucketName)
-    })
-    .then( ()=> {
-      image.url = `https://s3.amazonaws.com/${bucketName}/${Key}`;
-      return image.save();
-    })
-    .then( image => resolve(image))
-    .catch( ex => reject(ex));
-  });
+    const ThumbnailKey = `${image.id.toString()}.thumb.${extension}`;
+
+     await this.resize(buffer, extension).then(buffer=> this.toAWS(buffer, extension, Key, bucketName));
+     await this.resize(buffer, extension, 100).then(buffer=> this.toAWS(buffer, extension, ThumbnailKey, bucketName));
+
+    image.url = `https://s3.amazonaws.com/${bucketName}/${Key}`;
+    image.thumbnailURL = `https://s3.amazonaws.com/${bucketName}/${ThumbnailKey}`;
+    return image.save();
 };
 module.exports = Image;

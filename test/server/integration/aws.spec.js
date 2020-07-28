@@ -1,5 +1,12 @@
+try {
+  process.env = {...process.env, ...require('../../../secrets.js')}
+}
+catch(ex){
+  console.log('no secrets file');
+}
 const { expect } = require('chai');
 const app = require('supertest')(require('../../../server/app'));
+
 
 const jwt = require('jwt-simple');
 

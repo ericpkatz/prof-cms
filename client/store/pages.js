@@ -20,7 +20,7 @@ const _destroyPage = page => ({type: DESTROY_PAGE, page})
 
 
 export const fetchPages = () => async dispatch => {
-  return axios.get('/api/pages/all')
+  return axios.get('/api/pages')
     .then( response => {
       dispatch(_setPages(response.data))
     })

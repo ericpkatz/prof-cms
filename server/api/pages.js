@@ -16,7 +16,7 @@ router.delete('/:id', isLoggedIn, (req, res, next) => {
     .catch(next);
 });
 
-router.get('/all', async(req, res, next) => {
+router.get('/', async(req, res, next) => {
   try {
     const pages = await Page.findAll({ include });
     if(!pages.length){
@@ -28,22 +28,6 @@ router.get('/all', async(req, res, next) => {
   }
   catch(ex){
     next(ex);
-  }
-});
-
-router.get('/:id?', (req, res, next) => {
-  if(!req.params.id){
-    Page.getHomePage()
-      .then( page => {
-        return Page.findByPk(page.id, { include })
-      })
-      .then( page => res.send(page))
-      .catch(next);
-  }
-  else {
-    Page.findByPk(req.params.id, { include })
-      .then( page => res.send(page))
-      .catch(next);
   }
 });
 

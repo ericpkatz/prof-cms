@@ -31,6 +31,14 @@ const Page = db.define('page', {
 }, {
   hooks: {
     beforeSave: async function(page){
+      if(page.isHomePage && page.parentId){
+        const error = Error('home page can not have a parent');
+        throw error;
+      }
+      if(!page.isHomePage && !page.parentId){
+        const error = Error('parent page is required');
+        throw error;
+      }
       if(page.imageData){
         page.imageId = (await db.models.image.upload(page.imageData, process.env.bucket)).id;
       }
