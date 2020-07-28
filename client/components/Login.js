@@ -23,7 +23,7 @@ const Login = ({ login })=> {
         !!error && <div className='alert alert-danger'>{ error }</div>
       }
       <input placeholder='email' name='email' onChange={ ev=> setEmail(ev.target.value)}/>
-      <input placeholder='password' name='password' onChange={ ev => setPassword(ev.target.value)}/>
+      <input type='password' placeholder='password' name='password' onChange={ ev => setPassword(ev.target.value)}/>
       <button className='btn btn-primary' disabled={!email || !password}>Login</button>
     </form>
   );

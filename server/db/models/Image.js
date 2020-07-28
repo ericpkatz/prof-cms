@@ -1,5 +1,5 @@
 const S3 = require('../../S3');
-const gm = require('gm');
+const gm = require('gm').subClass({imageMagick: true});
 
 const db = require('../db')
 
@@ -55,8 +55,8 @@ Image.toAWS = function(buffer, extension, key, bucketName){
 
 Image.upload = async function(data, bucketName){
     const result = this.parse(data);
-    buffer = result.buffer;
-    extension = result.extension;
+    const buffer = result.buffer;
+    const extension = result.extension;
     const image = this.build();
     const Key = `${image.id.toString()}.${extension}`;
     const ThumbnailKey = `${image.id.toString()}.thumb.${extension}`;
