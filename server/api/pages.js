@@ -20,7 +20,7 @@ router.get('/', async(req, res, next) => {
   try {
     const pages = await Page.findAll({ include });
     if(!pages.length){
-      res.send([ Page.getHomePage()]);
+      res.send([ await Page.getHomePage()]);
     }
     else {
       res.send(pages);

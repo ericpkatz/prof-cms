@@ -24,7 +24,7 @@ describe('Integration: pages', ()=> {
         const token = users['moe@email.com'].generateToken();
         const response = await app.post('/api/pages')
           .set('authorization', token)
-          .send({ title: 'foo', content: 'bar', imageData: smiley })
+          .send({ title: 'foo', content: 'bar', imageData: smiley, isHomePage: true })
         expect(response.status).to.equal(200);
       });
     });

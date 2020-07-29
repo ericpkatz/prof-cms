@@ -9,18 +9,13 @@
   "scripts": {
     "build-client": "webpack",
     "build-client-watch": "webpack -w",
-    "deploy": "script/deploy",
-    "heroku-token": "script/encrypt-heroku-auth-token.js",
-    "lint": "eslint ./ --ignore-path .gitignore",
-    "lint-fix": "npm run lint -- --fix",
-    "prepare": "if [ -d .git ]; then npm-merge-driver install; fi",
-    "prettify": "prettier --write \"**/*.{js,jsx,json,css,scss,md}\"",
     "postinstall": "webpack",
     "seed": "node script/seed.js",
     "start": "node server",
     "start-dev": "NODE_ENV='development' npm run build-client-watch & NODE_ENV='development' npm run start-server",
     "start-server": "JWT_SECRET=foobarbazz nodemon server -e html,js,scss --ignore public --ignore client",
-    "test": "JWT_SECRET=fizzbuzz NODE_ENV='test' mocha \"./test/**/*.spec.js\" \"./client/**/*.spec.js\" \"./script/**/*.spec.js\" --require @babel/polyfill --require @babel/register"
+    "test:dev": "npm run test -- --watch",
+    "test": "JWT_SECRET=fizzbuzz NODE_ENV='test' mocha \"./test/**/*.spec.js\" \"./client/**/*.spec.js\" \"./script/**/*.spec.js\" --require @babel/polyfill --require @babel/register --timeout 5000"
   },
   "husky": {
     "hooks": {

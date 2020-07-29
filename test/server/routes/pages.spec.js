@@ -16,7 +16,7 @@ describe('Routes: pages', ()=> {
     it('creates a page if one does not exist', async()=> {
       const response = await app.get('/api/pages');
       expect(response.status).to.equal(200);
-      expect(response.body.title).to.equal('Home');
+      expect(response.body[0].title).to.equal('Home');
     });
   });
   describe('POST /api/pages', ()=> {
@@ -33,7 +33,7 @@ describe('Routes: pages', ()=> {
         const token = users['moe@email.com'].generateToken();
         const response = await app.post('/api/pages')
           .set('authorization', token)
-          .send({ title: 'foo', content: 'bar'})
+          .send({ title: 'foo', content: 'bar', isHomePage: true})
         expect(response.status).to.equal(200);
       });
     });
