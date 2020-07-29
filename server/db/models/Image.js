@@ -33,6 +33,7 @@ Image.resize = function(bufferIn, extension, size = 800){
     gm(bufferIn)
       .resize(null, size)
       .toBuffer(extension, (err, bufferOut)=> {
+        console.log('NOPE');
         if(err){
           return reject(err);
         }
