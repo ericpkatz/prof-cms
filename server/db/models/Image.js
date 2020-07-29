@@ -1,5 +1,5 @@
 const S3 = require('../../S3');
-const gm = require('gm').subClass({imageMagick: true});
+const gm = require('gm');
 
 const db = require('../db')
 
