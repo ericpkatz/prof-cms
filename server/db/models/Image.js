@@ -29,6 +29,7 @@ Image.parse = function(data){
 
 Image.resize = function(bufferIn, extension, size = 800){
   return new Promise((resolve, reject)=> {
+    console.log('HEEERE');
     gm(bufferIn)
       .resize(null, size)
       .toBuffer(extension, (err, bufferOut)=> {
