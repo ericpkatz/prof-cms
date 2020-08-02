@@ -13,10 +13,15 @@ class Form extends Component {
       parentId: page && page.parentId ? page.parentId: '',
       imageData: '',
       removeImage: false,
+      imageId: page && page.imageId ? page.imageId: '',
       error: ''
     };
     this.onChange = this.onChange.bind(this);
     this.update = this.update.bind(this);
+    this.setImage = this.setImage.bind(this);
+  }
+  setImage(image){
+    this.setState({ imageId: this.state.imageId === image.id ? '' : image.id });
   }
   loadFileReader(){
     if(this.el && !this.el.loaded){
@@ -32,10 +37,10 @@ class Form extends Component {
   }
   update(ev){
     ev.preventDefault();
-    const { title, content, imageData, removeImage, parentId } = this.state;
+    const { title, content, imageData, removeImage, parentId, imageId } = this.state;
 
     this.props.updatePage({
-      title, content, imageData, removeImage, parentId
+      title, content, imageData, removeImage, parentId, imageId
     })
     .catch(ex => {
       const error = typeof ex.response.data === 'string' ? ex.response.data : JSON.stringify(ex.response.data);//??
@@ -56,13 +61,14 @@ class Form extends Component {
         title: this.props.page.title,
         content: this.props.page.content,
         parentId: this.props.page.parentId || '',
+        imageId: this.props.page.imageId || ''
       });
     }
   }
   render(){
-    const { page, pagesLoaded } = this.props;
-    const { title, content, imageData, removeImage, parentId, error } = this.state;
-    const { onChange, update } = this;
+    const { images, page, pagesLoaded } = this.props;
+    const { imageId, title, content, imageData, removeImage, parentId, error } = this.state;
+    const { onChange, update, setImage } = this;
     if(!page){
       return '...loading';
     }
@@ -72,16 +78,6 @@ class Form extends Component {
               <h3>Update Page</h3>
               {
                 !!error && <div className='alert alert-danger'>{ error }</div>
-              }
-              <input ref={ el => this.el = el } type='file' />
-              {
-                page.image && <img style={{ width: '50px'}} src={ page.image.thumbnailURL } />
-              }
-              {
-                page.image && <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#EFEFEF', padding: '1rem'}}>
-                  Remove Image
-                  <input name='removeImage' type='checkbox' onChange={onChange}/>
-                  </label>
               }
               {
                 !page.isHomePage && 
@@ -100,6 +96,38 @@ class Form extends Component {
               }
               <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
               <textarea name='content' value={ content } onChange={ onChange } placeholder='...content'/>
+              <input ref={ el => this.el = el } type='file' />
+              {
+                page.image && (
+                  <div>
+                    <div>
+                      <div>Current Image:</div>
+                      <img style={{ width: '50px', margin: '1rem'}} src={ page.image.thumbnailURL } />
+                    </div>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#EFEFEF', padding: '1rem'}}>
+                    Remove Image
+                    <input name='removeImage' type='checkbox' onChange={onChange}/>
+                    </label>
+                  </div>
+
+                )
+              }
+              <div>
+                Choose Existing Image:
+                <ul>
+                  {
+                    images.map( image => {
+                      return (
+                        <li className={ imageId === image.id ? 'selected': ''} key={ image.id } onClick={ ()=> setImage(image)}>
+                          <img src={ image.thumbnailURL } />
+                        </li>
+                      );
+                    })
+
+                  }
+                </ul>
+                
+              </div>
               <button className='btn btn-primary'>Update Page</button>
               <Link to={`/${ page.isHomePage ? '' : page.id }`}>Cancel</Link>
             </form>
@@ -108,12 +136,13 @@ class Form extends Component {
   }
 }
 
-const mapStateToProps = ({ pages }, { location, match })=> {
+const mapStateToProps = ({ pages, images }, { location, match })=> {
   const _pages = Object.values(pages);
   return {
     pages: _pages.filter(p => p.id !== match.params.id),
     page: match.params.id ? pages[match.params.id] : _pages.find( page => page.isHomePage),
-    id: match.params.id
+    id: match.params.id,
+    images
   };
 };
 

@@ -31,6 +31,9 @@ const Page = db.define('page', {
 }, {
   hooks: {
     beforeSave: async function(page){
+      if(page.imageId === ''){
+        page.imageId = null;
+      }
       if(page.isHomePage && page.parentId){
         const error = Error('home page can not have a parent');
         throw error;

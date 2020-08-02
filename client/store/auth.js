@@ -8,7 +8,7 @@ export const exchangeTokenForAuth = (history)=> {
   return (dispatch)=> {
     const token = window.localStorage.getItem('token');
     if(!token){
-      return 
+      return Promise.reject('no token'); 
     }
     return axios.get('/api/auth', {
       headers: {

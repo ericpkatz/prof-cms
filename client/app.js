@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from 'react'
 import { Route, Switch, Link, Redirect } from 'react-router-dom';
-import {  fetchPages, exchangeTokenForAuth, logout } from './store';
+import {  fetchImages, fetchPages, exchangeTokenForAuth, logout } from './store';
 import { connect } from 'react-redux';
 
 import Page from './components/Page'

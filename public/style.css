@@ -46,3 +46,7 @@ main #right {
   margin-left: 1rem;
   padding-left: 1rem;
 }
+
+.selected {
+  border: solid 3px dodgerBlue;
+}

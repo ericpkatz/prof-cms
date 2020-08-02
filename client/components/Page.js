@@ -30,9 +30,11 @@ class Page extends Component {
           <section id='left'>
             <ul className='nav nav-tabs'>
               {
-                page.parent && <li className='nav-item'><Link className='nav-link' to={`/${page.parent.isHomePage ? '' : page.parent.id}`}>&lt; &lt; {
-                  page.parent.title
-                }</Link></li>
+                page.parent && <li className='nav-item'><Link className='nav-link' to={`/${page.parent.isHomePage ? '' : page.parent.id}`}>
+                <i style={{ paddingRight: '1rem'}} className="fas fa-chevron-left"></i>
+                {page.parent.title
+                }
+                </Link></li>
               }
               <li className='nav-item'>
                 <Link to={`/${page.isHomePage ? '' : page.id}`} className='nav-link active'>
