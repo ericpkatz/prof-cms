@@ -25,6 +25,10 @@ class Form extends Component {
   }
   loadFileReader(){
     if(this.el && !this.el.loaded){
+      this.editor = CodeMirror.fromTextArea(this.textArea, {});
+      this.editor.on('change', (...args)=> {
+        this.setState({ content: this.editor.doc.getValue()});
+      });
       this.el.loaded = true;
       const fileReader = new FileReader();
       fileReader.addEventListener('load', ()=> {
@@ -63,6 +67,7 @@ class Form extends Component {
         parentId: this.props.page.parentId || '',
         imageId: this.props.page.imageId || ''
       });
+      this.editor.doc.setValue(this.props.page.content);
     }
   }
   render(){
@@ -95,7 +100,7 @@ class Form extends Component {
                 </select>
               }
               <input name='title' value={ title } onChange={ onChange } placeholder='...title'/>
-              <textarea name='content' value={ content } onChange={ onChange } placeholder='...content'/>
+              <textarea name='content' value={ content } onChange={ onChange } placeholder='...content' ref={ ref => this.textArea = ref}/>
               <input ref={ el => this.el = el } type='file' />
               {
                 page.image && (

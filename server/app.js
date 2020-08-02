@@ -46,6 +46,7 @@ app.use('/api', require('./api'))
 
 // static file-serving middleware
 app.use('/public', express.static(path.join(__dirname, '..', 'public')))
+app.use('/codemirror', express.static(path.join(__dirname, '..', 'node_modules', 'codemirror')))
 
 app.get('/', (req, res) => {
   res.render(path.join(__dirname, '..', 'public/index.html'), {

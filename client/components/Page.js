@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { destroyPage } from '../store';
+import { markdown } from 'markdown';
 
 
 class Page extends Component {
@@ -72,7 +73,7 @@ class Page extends Component {
             }
             <div className='card'>
               <div className='card-body'>
-                { page.content }
+              <div dangerouslySetInnerHTML={{ __html: markdown.toHTML(page.content) }} />
                 {
                   page.image && <img src={ page.image.url } style={{ width: '100%'}}/>
                 }
