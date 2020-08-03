@@ -27,6 +27,10 @@ const Page = db.define('page', {
   },
   content: {
     type: TEXT
+  },
+  showChildPreviews: {
+    type: BOOLEAN,
+    defaultValue: false
   }
 }, {
   hooks: {

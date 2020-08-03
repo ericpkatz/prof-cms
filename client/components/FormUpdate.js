@@ -14,7 +14,8 @@ class Form extends Component {
       imageData: '',
       removeImage: false,
       imageId: page && page.imageId ? page.imageId: '',
-      error: ''
+      error: '',
+      showChildPreviews: page && page.showChildPreviews ? page.showChildPreviews : false 
     };
     this.onChange = this.onChange.bind(this);
     this.update = this.update.bind(this);
@@ -41,10 +42,10 @@ class Form extends Component {
   }
   update(ev){
     ev.preventDefault();
-    const { title, content, imageData, removeImage, parentId, imageId } = this.state;
+    const { title, content, imageData, removeImage, parentId, imageId, showChildPreviews } = this.state;
 
     this.props.updatePage({
-      title, content, imageData, removeImage, parentId, imageId
+      title, content, imageData, removeImage, parentId, imageId, showChildPreviews
     })
     .catch(ex => {
       const error = typeof ex.response.data === 'string' ? ex.response.data : JSON.stringify(ex.response.data);//??
@@ -65,14 +66,15 @@ class Form extends Component {
         title: this.props.page.title,
         content: this.props.page.content,
         parentId: this.props.page.parentId || '',
-        imageId: this.props.page.imageId || ''
+        imageId: this.props.page.imageId || '',
+        showChildPreview: this.props.showChildPreview || false
       });
       this.editor.doc.setValue(this.props.page.content);
     }
   }
   render(){
     const { images, page, pagesLoaded } = this.props;
-    const { imageId, title, content, imageData, removeImage, parentId, error } = this.state;
+    const { imageId, title, content, imageData, removeImage, parentId, error, showChildPreviews } = this.state;
     const { onChange, update, setImage } = this;
     if(!page){
       return '...loading';
@@ -132,6 +134,12 @@ class Form extends Component {
                   }
                 </ul>
                 
+              </div>
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#EFEFEF', padding: '1rem'}}>
+                  Show Child Previews
+                <input checked={showChildPreviews} name='showChildPreviews' type='checkbox' onChange={onChange}/>
+                </label>
               </div>
               <button className='btn btn-primary'>Update Page</button>
               <Link to={`/${ page.isHomePage ? '' : page.id }`}>Cancel</Link>

@@ -79,6 +79,23 @@ class Page extends Component {
                 }
               </div>
             </div>
+            {
+              page.showChildPreviews && (
+                page.children.map( page => {
+                  return (
+                    <div className='card'>
+                      <div className='card-body'>
+                      <div dangerouslySetInnerHTML={{ __html: markdown.toHTML(page.content) }} />
+                        {
+                          page.image && <img src={ page.image.url } style={{ width: '100%'}}/>
+                        }
+                      </div>
+                    </div>
+                  );
+
+                })
+              )
+            }
           </section>
        </main>
       </div>
